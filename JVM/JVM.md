@@ -25,7 +25,7 @@
 
    优点：没有内存碎片   缺点：指针需要移动
 
-<img src="F:\AndroidStudy\笔记\Blog\JVM\image-20230211170439981.png" alt="image-20230211170439981" style="zoom:50%;" />
+<img src="folder\image-20230211170439981.png" alt="image-20230211170439981" style="zoom:50%;" />
 
 
 
