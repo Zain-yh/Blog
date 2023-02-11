@@ -25,7 +25,7 @@
 
    优点：没有内存碎片   缺点：指针需要移动
 
-<img src="F:\AndroidStudy\笔记\Blog\JVM\image-20230211170439981.png" alt="image-20230211170439981" style="zoom:50%;" />
+<img src="image-20230211170439981.png" alt="image-20230211170439981" style="zoom:50%;" />
 
 
 
@@ -35,7 +35,7 @@
 
 以减少STW为目的的垃圾回收器  Concurrent Mark Sweep    使用了垃圾清除算法
 
-![image-20230211185109763](F:\AndroidStudy\NoteImage\image-20230211185109763-16761137026481.png)
+![image-20230211185109763](image-20230211185109763.png)
 
 ```
 老年代的机制与一个叫CARD TABLE的东西（这个东西其实就是个数组,数组中每个位置存的是一个byte）密不可分。
@@ -60,10 +60,43 @@ CMS将老年代的空间分成大小为512bytes的块，card table中的每个�
 
 ### CMS垃圾清理日志
 
-![image-20230211190021502](F:\AndroidStudy\NoteImage\image-20230211190021502-16761137095503.png)
+![image-20230211190021502](image-20230211190021502.png)
 
 ### CMS存在的问题
 
 - CPU敏感  要求CPU >= 4
 - 浮动垃圾   并发清理过程中产生的垃圾，要预留空间，导致无法等到内存占用满再开始GC
-- 内存碎片
+- 内存碎片   搭配其他垃圾回收器使用
+
+## JVM调优
+
+![image-20230211194627786](image-20230211194627786.png)
+
+![image-20230211195807842](image-20230211195807842.png)
+
+## 常量池
+
+- #### Class常量池
+
+  主要存放两大类常量：字面量（Literal）和符号引用（Symbolic References）。字面量比较接近于Java语言层面的常量概念，如文本字符串、被声明为final的常量值等。而符号引用则属于编译原理方面的概念，主要包括下面几类常量：
+
+  ·被模块导出或者开放的包（Package）
+
+  ·类和接口的全限定名（Fully Qualified Name）
+
+  ·字段的名称和描述符（Descriptor）
+
+  ·方法的名称和描述符
+
+  ·方法句柄和方法类型（Method Handle、Method Type、Invoke Dynamic）
+
+  ·动态调用点和动态常量（Dynamically-Computed Call Site、Dynamically-Computed Constant）
+
+- #### 运行时常量池
+
+  将运行时的字面量转换成真实地址
+
+  运行时常量池相对于class温江常量池的一个重要特征是具有**动态性**。这是什么意思呢，就是当你的class文件一旦编译后，你的class常量池就是确定了的，而运行时常量池在运行期间也可能有新的常量放入池中（如String类的intern()方法）
+
+- #### 字符串常量池
+
