@@ -25,7 +25,7 @@
 
    优点：没有内存碎片   缺点：指针需要移动
 
-<img src="folder\image-20230211170439981.png" alt="image-20230211170439981" style="zoom:50%;" />
+<img src="https://github.com/Zain-yh/Blog/blob/main/JVM/image-20230211170439981.png" alt="image-20230211170439981" style="zoom:50%;" />
 
 
 
@@ -35,7 +35,7 @@
 
 以减少STW为目的的垃圾回收器  Concurrent Mark Sweep    使用了垃圾清除算法
 
-![image-20230211185109763](F:\AndroidStudy\NoteImage\image-20230211185109763-16761137026481.png)
+![image](https://github.com/Zain-yh/Blog/blob/main/JVM/image-20230211185109763.png)
 
 ```
 老年代的机制与一个叫CARD TABLE的东西（这个东西其实就是个数组,数组中每个位置存的是一个byte）密不可分。
@@ -60,7 +60,7 @@ CMS将老年代的空间分成大小为512bytes的块，card table中的每个�
 
 ### CMS垃圾清理日志
 
-![image-20230211190021502](F:\AndroidStudy\NoteImage\image-20230211190021502-16761137095503.png)
+![image](https://github.com/Zain-yh/Blog/blob/main/JVM/image-20230211190021502.png)
 
 ### CMS存在的问题
 
