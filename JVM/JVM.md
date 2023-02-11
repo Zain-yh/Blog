@@ -60,7 +60,7 @@ CMS将老年代的空间分成大小为512bytes的块，card table中的每个�
 
 ### CMS垃圾清理日志
 
-![image](https://github.com/Zain-yh/Blog/blob/main/JVM/image-20230211190021502.png)
+![image](image-20230211190021502.png)
 
 ### CMS存在的问题
 
