@@ -1,3 +1,124 @@
+## 对象创建流程
+
+1. 检查加载（类信息）
+2. 分配内存 
+   - 划分内存的方式有 指针碰撞、空闲列表
+   - 解决并发安全：CAS锁、TLAB（Thread Local Allocate Buffer（线程本地缓冲），每个线程分配自己的Buffer）
+3. 内存空间初始化（0值化）
+4. 设置（对象头）
+5. 对象初始化（构造方法）
+
+### 对象头
+
+ 1. ##### 储存对象自身的运行时数据（mark word）
+
+     1. 哈希吗
+     2. GC分代年龄
+     3. 锁状态标识
+     4. 线程持有的锁
+     5. 偏向线程ID
+     6. 偏向时间戳
+
+2. ##### 类型指针
+
+   - 指向方法区的类变量
+
+3. ##### 若为数组对象，还应以后记录数组长度的数据
+
+## 对象的访问定位
+
+句柄池 --> Java堆实例
+
+主流是使用直接指针---》地址修改时需要更新线程数据
+
+## JVM参数： 
+
+```
+-Xint：设置 jvm 以解释模式运行，所有的字节码将被直接执行，而不会编译成本地码
+-Xmixed：混合模式，JVM自己来决定是否编译成本地代码，默认使用的就是混合模式
+-Xbatch：关闭后台代码编译，强制在前台编译，编译完成之后才能进行代码执行。 默认情况下，jvm 在后台进行编译，若没有编译完成，则前台运行代码时以解释模式运行
+-Xbootclasspath:bootclasspath：让 jvm 从指定路径（可以是分号分隔的目录、jar、或者zip）中加载bootclass，用来替换 jdk 的 rt.jar；若非必要，一般不会用到
+-Xbootclasspath/a:path ：将指定路径的所有文件追加到默认 bootstrap 路径中
+-Xfuture：让jvm对类文件执行严格的格式检查（默认 jvm 不进行严格格式检查），以符合类文件格式规范，推荐开发人员使用该参数。
+-Xincgc：开启增量 gc（默认为关闭），这有助于减少长时间GC时应用程序出现的停顿，但由于可能和应用程序并发执行，所以会降低CPU对应用的处理能力
+-Xloggc:file： 与-verbose:gc功能类似，只是将每次GC事件的相关情况记录到一个文件中，文件的位置最好在本地，以避免网络的潜在问题。若与 verbose 命令同时出现在命令行中，则以 -Xloggc 为准
+-Xms：指定 jvm 堆的初始大小，默认为物理内存的1/64，最小为1M，可以指定单位，比如k、m，若不指定，则默认为字节
+-Xmx：指定 jvm 堆的最大值，默认为物理内存的 1/4或者1G，最小为2M；单位与-Xms一致
+-Xprof：跟踪正运行的程序，并将跟踪数据在标准输出输出；适合于开发环境调试
+-Xss： 设置单个线程栈的大小，一般默认为 512k
+
+-XX:+PrintGCDetails 开启GC日志
+
+-XX:NewSize：设置年轻代最小空间大小
+-XX:MaxNewSize：设置年轻代最大空间大小
+-XX:PermSize：设置永久代最小空间大小
+-XX:MaxPermSize：设置永久代最大空间大小
+-XX:NewRatio：设置年轻代和老年代的比值。默认值-XX:NewRatio=2，表示年轻代与老年代比值为1:2，年轻代占整个堆大小的1/3
+-XX:SurvivorRatio：设置年轻代中Eden区Survivor区的容量比值。默认值-XX:SurvivorRatio=8，表示Eden : Survivor0 : Survivor1 = 8 : 1 : 1
+-XX:-OmitStackTraceInFastThrow：关闭（省略异常栈从而快速抛出），默认开启。如果想将所有异常信息都抛出，建议关闭。
+-XX:+HeapDumpOnOutOfMemoryError：表示当JVM发生OOM时，自动生成DUMP文件。
+-XX:HeapDumpPath=/usr/local/dump：dump文件路径或者名称。如果不指定文件名，默认为：java_<pid>_<date>_<time>_heapDump.hprof
+
+
+```
+
+
+
+## 垃圾回收
+
+### 可达性分析
+
+#### GCRoots 
+
+1. 静态对象
+2. 常量池
+3. 局部变量
+4. JNI指针
+5. 内部引用 class对象、异常对象Exception、类加载器
+6. 锁 synchronized对象
+7. 内部对象
+8. 临时对象：跨代引用
+
+#### class回收比较苛刻  
+
+1. class 实例化的所有对象都要回收
+
+2. 对应的类加载器 也要被回收掉
+
+3. 类 java.lang.class对象，
+
+4. 任何地方没有被引用，并且无法通过反射调这个类
+
+5. 参数控制 -Xboclassgc
+
+   
+
+#### Finalize
+
+​	在对象被回收的时候会调用，可以挽回对象
+
+​	但只会被调用一次
+
+
+
+## 对象分配策略
+
+几乎所有的对象分配在堆中，但也有在栈上分配
+
+大对象会被直接分配在老年代（只有在Serial或ParNew这两个垃圾回收器才生效）
+
+虚拟机的优化技术：
+
+1、 逃逸分析 + 触发JIT（热点数据）
+
+ 2、本地线程分配缓冲
+
+![image-20230209202705369](image-20230209202705369.png)
+
+
+
+
+
 ## 对象分配原则    
 
 1. 对象优先在Eden分配
@@ -52,6 +173,8 @@ CMS将老年代的空间分成大小为512bytes的块，card table中的每个�
 
 ### 并发可中断预清理：循环
 
+​	执行条件：当eden区使用内存超过2M
+
 - 同上，但eden区变成了*survive*区
 - 它会尝试若干次预清理过程，直到次数到达GC允许的上限，或者超过指定时间
 -   -可中断的条件：1）可以设置循环次数。2）可以设置时间。3）EDEN区的最大比例（大于比例退出循环）。
@@ -73,26 +196,26 @@ CMS将老年代的空间分成大小为512bytes的块，card table中的每个�
 
 ## 常量池
 
-- #### Class常量池
+#### Class常量池
 
-  主要存放两大类常量：字面量（Literal）和符号引用（Symbolic References）。字面量比较接近于Java语言层面的常量概念，如文本字符串、被声明为final的常量值等。而符号引用则属于编译原理方面的概念，主要包括下面几类常量：
+主要存放两大类常量：字面量（Literal）和符号引用（Symbolic References）。字面量比较接近于Java语言层面的常量概念，如文本字符串、被声明为final的常量值等。而符号引用则属于编译原理方面的概念，主要包括下面几类常量：
 
-  ·被模块导出或者开放的包（Package）
+- 被模块导出或者开放的包（Package）
 
-  ·类和接口的全限定名（Fully Qualified Name）
+- 类和接口的全限定名（Fully Qualified Name）
 
-  ·字段的名称和描述符（Descriptor）
+- 字段的名称和描述符（Descriptor）
 
-  ·方法的名称和描述符
+- 方法的名称和描述符
 
-  ·方法句柄和方法类型（Method Handle、Method Type、Invoke Dynamic）
+- 方法句柄和方法类型（Method Handle、Method Type、Invoke Dynamic）
 
-  ·动态调用点和动态常量（Dynamically-Computed Call Site、Dynamically-Computed Constant）
+- 动态调用点和动态常量（Dynamically-Computed Call Site、Dynamically-Computed Constant）
 
-- #### 运行时常量池
+#### 运行时常量池
 
-  将运行时的字面量转换成真实地址
+将运行时的字面量转换成真实地址
 
-  运行时常量池相对于class温江常量池的一个重要特征是具有**动态性**。这是什么意思呢，就是当你的class文件一旦编译后，你的class常量池就是确定了的，而运行时常量池在运行期间也可能有新的常量放入池中（如String类的intern()方法）
+运行时常量池相对于class温江常量池的一个重要特征是具有**动态性**。这是什么意思呢，就是当你的class文件一旦编译后，你的class常量池就是确定了的，而运行时常量池在运行期间也可能有新的常量放入池中（如String类的intern()方法）
 
-- #### 字符串常量池
+#### 字符串常量池
