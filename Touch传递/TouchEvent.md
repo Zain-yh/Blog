@@ -2,7 +2,7 @@
 
 ```java
 setView@ViewRootImpl 
- -->WindowInputEventReceiver
+ -->WindowInputEventReceiver  //监听系统的Touch事件  传递给InputStage  
     -->enqueueInputEvent
     	-->doProcessInputEvents
     		-->deliverInputEvent
@@ -13,7 +13,18 @@ InputStage viewPostImeStage = new ViewPostImeInputStage(mSyntheticInputStage);
 		-->mView.dispatchPointerEvent(event);
 			-->DecorView.dispatchTouchEvent
                 --> Activity.dispatchTouchEvent
-                	-->DecorView.superDispatchTouchEvent 这里才是Decor的真正处理
+                	-->DecorView.superDispatchTouchEvent //这里才是Decor的真正处理
+                
+                
+// 处理流程  Activity
+processPointerEvent()@ViewRootImpl
+	--> view.dispatchTouchEvent() // DecorView.java
+        -->windowCallBack.dispatchTouchEvent(ev)  //windowCallBack == Activity
+           --> getWindow().superDispatchTouchEvent(ev) //  PhoneWindow -->
+              --> mDecor.superDispatchTouchEvent(event); // DecorView
+              	 --> super.dispatchTouchEvent(event)@DecorView.java //开始执行ViewGroup的dispatch
+              		--> 开始ViewTree的事件分发
+           --> onTouchEvent(ev)@Activity // 如果viewTree不处理事件，回到activiy的onTouchEvent
 ```
 
 ### onTouch、onTouchEvent、onClick
