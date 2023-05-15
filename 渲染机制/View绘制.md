@@ -52,7 +52,7 @@ mAttachInfo = new View.AttachInfo(); // 保存当前窗口的一些信息
 4. 进行第二次测量
 
 5. 如果还不满意，直接给自己的最大值，然后第三次测量 -- 不确定
-  如果 windowSizeMayChange = true; --》 表示还需要测量
+    如果 windowSizeMayChange = true; --》 表示还需要测量
 
   ### 第二种解释
 

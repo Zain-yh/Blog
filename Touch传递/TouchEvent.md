@@ -12,7 +12,7 @@ InputStage viewPostImeStage = new ViewPostImeInputStage(mSyntheticInputStage);
     -->processPointerEvent(q);
 		-->mView.dispatchPointerEvent(event);
 			-->DecorView.dispatchTouchEvent
-                --> Activity.dispatchTouchEvent
+                --> Activity.dispatchTouchEvent //先到PhoneWindow  在分发给DecorView
                 	-->DecorView.superDispatchTouchEvent //这里才是Decor的真正处理
                 
                 
