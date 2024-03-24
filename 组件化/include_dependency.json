@@ -1,0 +1,27 @@
+{
+  "enable": true,
+  "module_list": [
+    {
+      // 是否开启组件联调
+      "useModule": false,
+      // include模块名
+      "module_name": ":emotion",
+      // 模块路径
+      "module_dir": "/Users/apple/Documents/android/baidu/baidu/inputmethod/ime-emotion",
+      // group id
+      "module_group": "com.baidu.input:emotion"
+    },
+    {
+      "useModule": false,
+      "module_name": ":emotion_api",
+      "module_dir": "/Users/apple/Documents/android/baidu/baidu/inputmethod/ime-emotion",
+      "module_group": "com.baidu.input:emotion_api"
+    },
+    {
+      "useModule": false,
+      "module_name": ":skinrender",
+      "module_dir": "/Users/apple/Documents/android/baidu/baidu/inputmethod/imeskinrender",
+      "module_group": "com.baidu.input:skinrender"
+    }
+  ]
+}
